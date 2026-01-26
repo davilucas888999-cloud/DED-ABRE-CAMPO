@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premiados - ENEM Bíblico</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            margin: 20px auto;
+            color: #333;
+            max-width: 95%;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: none;
+        }
+
+        thead tr {
+            background-color: #999999; /* Cinza mais escuro para o cabeçalho */
+        }
+
+        th {
+            padding: 12px 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+            color: #000;
+            text-transform: uppercase;
+        }
+
+        /* Alinhamento específico para o Nome à esquerda */
+        th:nth-child(2), td:nth-child(2) {
+            text-align: left;
+        }
+
+        td {
+            padding: 8px 10px;
+            font-size: 0.8rem;
+            border: none;
+            text-align: center; /* Centraliza Município, UF, Medalha, Menção e Código */
+        }
+
+        /* Impede que Código e Município quebrem linha */
+        td:nth-child(1), td:nth-child(3) {
+            white-space: nowrap;
+        }
+
+        /* Efeito Zebra */
+        tbody tr:nth-child(odd) {
+            background-color: #f2f2f2; /* Cinza mais claro */
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #dddddd; /* Cinza um pouco mais escuro */
+        }
+
+        .uppercase {
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>LISTA DE PREMIADOS DO ENEM BÍBLICO</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>CÓDIGO</th>
+                <th>NOME</th>
+                <th>MUNICÍPIO</th>
+                <th>UF</th>
+                <th>MEDALHA</th>
+                <th>MENÇÃO</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="uppercase">MG031353650000198</td>
+                <td class="uppercase">AMANDA FERREIRA SOUSA</td>
+                <td class="uppercase">ABRE CAMPO</td>
+                <td class="uppercase">MG</td>
+                <td>Ouro</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="uppercase">MG031353650001990</td>
+                <td class="uppercase">BRUNO COSTA GONCALVES</td>
+                <td class="uppercase">ABRE CAMPO</td>
+                <td class="uppercase">MG</td>
+                <td>-</td>
+                <td>Sim</td>
+            </tr>
+            <tr>
+                <td class="uppercase">MG031353650001830</td>
+                <td class="uppercase">CLARA GONCALVES BARROS</td>
+                <td class="uppercase">ABRE CAMPO</td>
+                <td class="uppercase">MG</td>
+                <td>Bronze</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="uppercase">MG031353650002013</td>
+                <td class="uppercase">DAVI LUCAS PAULINO DA COSTA</td>
+                <td class="uppercase">ABRE CAMPO</td>
+                <td class="uppercase">MG</td>
+                <td>Prata</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="uppercase">MG031353650008282</td>
+                <td class="uppercase">EMILLY ALVES CASTRO</td>
+                <td class="uppercase">ABRE CAMPO</td>
+                <td class="uppercase">MG</td>
+                <td>-</td>
+                <td>Sim</td>
+            </tr>
+            <tr>
+                <td class="uppercase">MG031353650008293</td>
+                <td class="uppercase">ISABELLA PEREIRA GONCALVES</td>
+                <td class="uppercase">ABRE CAMPO</td>
+                <td class="uppercase">MG</td>
+                <td>Bronze</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="uppercase">MG031353650006289</td>
+                <td class="uppercase">LETÍCIA MELO SOUSA</td>
+                <td class="uppercase">ABRE CAMPO</td>
+                <td class="uppercase">MG</td>
+                <td>Ouro</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="uppercase">MG031353650001876</td>
+                <td class="uppercase">PAULO LIMA PEREIRA</td>
+                <td class="uppercase">ABRE CAMPO</td>
+                <td class="uppercase">MG</td>
+                <td>Ouro</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="uppercase">MG031353650001986</td>
+                <td class="uppercase">ROSENILDA APARECIDA DA COSTA</td>
+                <td class="uppercase">ABRE CAMPO</td>
+                <td class="uppercase">MG</td>
+                <td>Bronze</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="uppercase">MG031353650001982</td>
+                <td class="uppercase">SEBASTIÃO SILVANIO PAULINO DA COSTA</td>
+                <td class="uppercase">ABRE CAMPO</td>
+                <td class="uppercase">MG</td>
+                <td>Bronze</td>
+                <td>-</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
