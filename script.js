@@ -251,22 +251,38 @@ function updateBimestreProgressIndicator() {
  * INTERFACES DE GERENCIAMENTO DE ATIVIDADES
  */
 function openCriarAtividade() {
-    resetAtividadeForm();
+    // Primeiro mostra a tela e somente depois renderiza a matriz.
+    // Isso evita que a tabela fique invisível quando a tela ainda está oculta.
+    if (!selectedMateria) {
+        alert('Selecione uma disciplina antes de abrir o quadro de atividades.');
+        navigate('home');
+        return;
+    }
 
-    const isFechado = db.configGlobal.bimestresFechados[selectedBimestre];
+    if (!db.disciplinas[selectedMateria]) {
+        alert('A disciplina selecionada não foi encontrada no banco de dados.');
+        return;
+    }
+
+    if (!db.disciplinas[selectedMateria][selectedBimestre]) {
+        db.disciplinas[selectedMateria][selectedBimestre] = {
+            atividades: [],
+            recuperacaoBimestral: {}
+        };
+        saveStorage();
+    }
+
+    resetAtividadeForm();
+    navigate('criar-atividade');
+
+    const isFechado = !!db.configGlobal.bimestresFechados[selectedBimestre];
     const formBox = document.getElementById('wrapper-form-atividade');
     const lockBox = document.getElementById('alerta-bloqueio-atividade');
 
-    if (isFechado) {
-        formBox.style.display = 'none';
-        lockBox.style.display = 'block';
-    } else {
-        formBox.style.display = 'block';
-        lockBox.style.display = 'none';
-    }
+    if (formBox) formBox.style.display = isFechado ? 'none' : 'block';
+    if (lockBox) lockBox.style.display = isFechado ? 'block' : 'none';
 
     renderAtividadesCriadasList();
-    navigate('criar-atividade');
 }
 
 function resetAtividadeForm() {

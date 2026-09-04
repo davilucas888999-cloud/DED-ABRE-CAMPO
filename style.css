@@ -1242,3 +1242,42 @@ body {
         width: 190px;
     }
 }
+
+
+/* CORREÇÃO DE EXIBIÇÃO NO COMPUTADOR — QUADRO DE ATIVIDADES */
+@media (min-width: 900px) {
+    .main-container {
+        max-width: 1400px;
+        padding: 24px;
+    }
+    .atividades-grade-wrapper {
+        display: block !important;
+        visibility: visible !important;
+        width: 100%;
+    }
+    .atividades-grade-scroll {
+        display: block !important;
+        visibility: visible !important;
+        overflow-x: auto;
+    }
+    .atividades-grade-table {
+        display: table !important;
+        visibility: visible !important;
+    }
+}
+
+/* Uma atividade por coluna; dentro da coluna: Nota, Recuperação e Nota Final. */
+.atividade-stacked-cell {
+    min-width: 185px;
+    width: 185px;
+}
+.nota-final-value {
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef5ff;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-weight: 800;
+}
