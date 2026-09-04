@@ -1,3 +1,4 @@
+
 /* TOKENS DE ESTILIZAÇÃO E MODOS DE COR */
 :root {
     --bg: #f1f5f9;
@@ -1203,30 +1204,7 @@ body {
     margin-right: 3px;
 }
 
-.situacao-pill {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 72px;
-    padding: 5px 8px;
-    border-radius: 5px;
-    font-size: .66rem;
-    font-weight: 800;
-    border: 1px solid transparent;
-}
-
-.situacao-aprovado {
-    color: #166534;
-    background: #dcfce7;
-    border-color: #a7e0b8;
-}
-
-.situacao-recuperacao {
-    color: #b91c1c;
-    background: #fee2e2;
-    border-color: #f4b4b4;
-}
-
+/* status removido */
 @media (max-width: 700px) {
     .atividades-grade-table {
         min-width: 1050px;
@@ -1280,4 +1258,28 @@ body {
     border: 1px solid var(--border);
     border-radius: 5px;
     font-weight: 800;
+}
+
+
+/* NOTA FINAL: azul para igual/acima da média e vermelho para abaixo. */
+.nota-final-value.nota-alta, .nota-alta {
+    color: #2563eb !important;
+    font-weight: 800;
+}
+.nota-final-value.nota-baixa, .nota-baixa {
+    color: #dc2626 !important;
+    font-weight: 800;
+}
+/* O quadro de atividades não exibe status/aprovado. */
+.atividades-grade-table .summary-cell, .atividades-grade-table .situacao-pill {
+    display: none !important;
+}
+
+/* QUADRO DE ATIVIDADES — somente azul/vermelho na Nota Final */
+.nota-final-value.nota-alta, .nota-alta { color:#2563eb !important; font-weight:800; }
+.nota-final-value.nota-baixa, .nota-baixa { color:#dc2626 !important; font-weight:800; }
+.atividades-grade-table .summary-cell, .atividades-grade-table .situacao-pill { display:none !important; }
+@media (min-width: 900px) {
+  .main-container { max-width: none !important; width: 100% !important; padding: 24px 32px !important; }
+  .atividades-grade-wrapper { width: 100% !important; }
 }

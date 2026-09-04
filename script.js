@@ -1,3 +1,4 @@
+
 /**
  * SIGENOTAS 2026 - ARQUITETURA DE CÓDIGO FONTE EXPANDIDA
  * SISTEMA OPERACIONAL MÓVEL PARA LANÇAMENTO DE AVALIAÇÕES E NOTAS
@@ -556,26 +557,7 @@ function renderAtividadesCriadasList() {
             `;
         });
 
-        // Totais da linha continuam usando notaFinal de cada atividade.
-        let totalObtido = atividades.reduce((sum, a) => {
-            return sum + (parseFloat(a.notas?.[aluno]?.notaFinal) || 0);
-        }, 0);
-        const totalPossivel = atividades.reduce((sum, a) => sum + (parseFloat(a.valor) || 0), 0);
-        const percentual = totalPossivel > 0 ? (totalObtido / totalPossivel) * 100 : 0;
-        const aprovado = percentual >= CONFIG.passingScorePct * 100;
-
-        cells += `
-            <td class="summary-cell"><strong>${totalObtido.toFixed(2).replace('.', ',')}</strong></td>
-            <td class="summary-cell">${totalPossivel.toFixed(2).replace('.', ',')}</td>
-            <td class="summary-cell"><strong>${Math.round(percentual)}%</strong></td>
-            <td class="summary-cell">
-                <span class="situacao-pill ${aprovado ? 'situacao-aprovado' : 'situacao-recuperacao'}">
-                    ${aprovado ? 'Aprovado' : 'Recuperação'}
-                </span>
-            </td>
-        `;
-
-        tr.innerHTML = cells;
+                tr.innerHTML = cells;
         body.appendChild(tr);
     });
 
@@ -669,28 +651,9 @@ function autoSaveNotaMatrix(aluno, atvId, campo, input, valorAtv) {
 }
 
 function atualizarResumoAlunoMatrix(aluno) {
-    const bData = db.disciplinas[selectedMateria][selectedBimestre];
-    const atividades = bData.atividades || [];
-    const totalObtido = atividades.reduce((sum, a) => sum + (parseFloat(a.notas?.[aluno]?.notaFinal) || 0), 0);
-    const totalPossivel = atividades.reduce((sum, a) => sum + (parseFloat(a.valor) || 0), 0);
-    const percentual = totalPossivel > 0 ? (totalObtido / totalPossivel) * 100 : 0;
-    const aprovado = percentual >= CONFIG.passingScorePct * 100;
-
-    document.querySelectorAll('#atividades-grade-body tr').forEach(row => {
-        const name = row.querySelector('.aluno-grade-name strong');
-        if (!name || name.textContent.trim() !== aluno) return;
-        const cells = row.querySelectorAll('.summary-cell');
-        if (cells.length < 4) return;
-        cells[0].querySelector('strong').textContent = totalObtido.toFixed(2).replace('.', ',');
-        cells[1].textContent = totalPossivel.toFixed(2).replace('.', ',');
-        cells[2].querySelector('strong').textContent = Math.round(percentual) + '%';
-        const pill = cells[3].querySelector('.situacao-pill');
-        if (pill) {
-            pill.textContent = aprovado ? 'Aprovado' : 'Recuperação';
-            pill.className = 'situacao-pill ' + (aprovado ? 'situacao-aprovado' : 'situacao-recuperacao');
-        }
-    });
+    // O quadro não exibe coluna/aba de situação.
 }
+
 
 /**
  * SISTEMA DINÂMICO DE LANÇAMENTO E COLORIZAÇÃO DE NOTAS
@@ -1675,3 +1638,4 @@ function gerarBoletimPDF(aluno) {
     adicionarPaginaBoletim(doc, aluno, imgLogo);
     doc.save(`boletim_2026_${aluno.replace(/ /g, '_')}.pdf`);
 }
+
