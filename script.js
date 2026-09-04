@@ -1112,6 +1112,57 @@ function executeReabrirBimestreProcedure(bimestreParaReabrir) {
 }
 
 /**
+ * EXPORTA TODOS OS BOLETINS EM UM ÚNICO PDF.
+ * Cada aluno recebe uma página própria, usando o mesmo modelo
+ * do boletim individual e o brasão da Prefeitura.
+ */
+function exportarTodosBoletinsPDF() {
+    try {
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+            alert("Não foi possível carregar o gerador de PDF. Verifique a conexão com a internet e tente novamente.");
+            return;
+        }
+
+        if (!Array.isArray(ALUNOS) || ALUNOS.length === 0) {
+            alert("Não há alunos cadastrados para gerar os boletins.");
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        const imgEl = document.getElementById('img-brasao-base64');
+        let imgLogo = null;
+
+        // Converte o brasão já carregado na página para uma imagem que o jsPDF consegue usar.
+        if (imgEl && imgEl.complete && imgEl.naturalWidth > 0) {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = imgEl.naturalWidth;
+                canvas.height = imgEl.naturalHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(imgEl, 0, 0);
+                imgLogo = canvas.toDataURL('image/png');
+            } catch (logoError) {
+                console.warn('Não foi possível embutir o brasão:', logoError);
+            }
+        }
+
+        // Uma página por aluno, sem criar arquivos PDF separados.
+        ALUNOS.forEach((aluno, index) => {
+            if (index > 0) doc.addPage();
+            adicionarPaginaBoletim(doc, aluno, imgLogo);
+        });
+
+        const nomeArquivo = `boletins_2026_todos_os_alunos.pdf`;
+        doc.save(nomeArquivo);
+
+    } catch (error) {
+        console.error('Erro ao exportar todos os boletins:', error);
+        alert('Não foi possível gerar o PDF com todos os boletins. Abra o console do navegador para ver os detalhes do erro.');
+    }
+}
+
+/**
  * EXPORTAÇÃO EM FORMATO DE TABELA - UMA FOLHA EXCLUSIVA POR ALUNO
  */
 function exportBoletimCompletoPDF() {
