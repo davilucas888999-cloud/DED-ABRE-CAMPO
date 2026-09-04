@@ -1203,29 +1203,6 @@ body {
     margin-right: 3px;
 }
 
-.situacao-pill {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 72px;
-    padding: 5px 8px;
-    border-radius: 5px;
-    font-size: .66rem;
-    font-weight: 800;
-    border: 1px solid transparent;
-}
-
-.situacao-aprovado {
-    color: #166534;
-    background: #dcfce7;
-    border-color: #a7e0b8;
-}
-
-.situacao-recuperacao {
-    color: #b91c1c;
-    background: #fee2e2;
-    border-color: #f4b4b4;
-}
 
 @media (max-width: 700px) {
     .atividades-grade-table {
@@ -1283,9 +1260,62 @@ body {
 }
 
 
-/* Nota final consolidada do bimestre: somente azul (>= 60%) ou vermelho (< 60%). */
-.nota-final-bimestre-head { min-width: 145px; }
-.nota-final-bimestre-cell { min-width: 145px; text-align: center; vertical-align: middle; }
-.nota-final-bimestre-value { display: inline-flex; min-width: 72px; padding: 8px 10px; border-radius: 6px; align-items: center; justify-content: center; font-weight: 800; }
-.nota-final-bimestre-value.nota-alta { color: #1d4ed8; background: #dbeafe; border: 1px solid #93c5fd; }
-.nota-final-bimestre-value.nota-baixa { color: #b91c1c; background: #fee2e2; border: 1px solid #fca5a5; }
+
+.nota-bimestre-head {
+    min-width: 145px;
+    width: 145px;
+    padding: 10px 8px;
+    background: var(--primary) !important;
+    color: #fff !important;
+    text-align: center;
+    vertical-align: middle;
+    font-size: .72rem;
+    line-height: 1.2;
+    position: sticky;
+    right: 0;
+    z-index: 6;
+}
+
+.nota-final-bimestre-cell {
+    min-width: 145px;
+    width: 145px;
+    padding: 10px 8px !important;
+    text-align: center;
+    vertical-align: middle;
+    background: var(--card);
+    position: sticky;
+    right: 0;
+    z-index: 4;
+    box-shadow: -4px 0 8px rgba(0,0,0,.04);
+}
+
+.nota-final-bimestre-cell strong {
+    display: inline-flex;
+    min-width: 82px;
+    min-height: 38px;
+    padding: 7px 10px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-size: .92rem;
+    font-weight: 900;
+}
+
+.nota-alta {
+    color: #0756b6 !important;
+    background: #e8f1ff !important;
+}
+
+.nota-baixa {
+    color: #c62828 !important;
+    background: #ffebeb !important;
+}
+
+@media (min-width: 900px) {
+    .main-container {
+        max-width: none !important;
+        width: 100% !important;
+        padding-left: 28px !important;
+        padding-right: 28px !important;
+    }
+}

@@ -461,11 +461,19 @@ function renderAtividadesCriadasList() {
     const isFechado = db.configGlobal.bimestresFechados[selectedBimestre];
 
     if (atividades.length === 0) {
-        head.innerHTML = `<tr><th class="atividade-vazia-header"><i class="fas fa-table"></i> Nenhuma atividade criada neste bimestre</th></tr>`;
-        body.innerHTML = `<tr><td class="atividade-vazia-cell">Crie a primeira atividade usando o formulário acima.</td></tr>`;
+        head.innerHTML = `
+            <tr><th class="atividade-vazia-header">
+                <i class="fas fa-table"></i> Nenhuma atividade criada neste bimestre
+            </th></tr>`;
+        body.innerHTML = `
+            <tr><td class="atividade-vazia-cell">
+                Crie a primeira atividade usando o formulário acima.
+            </td></tr>`;
         return;
     }
 
+    // Cada atividade é UMA COLUNA. Dentro dela ficam, verticalmente:
+    // NOTA -> RECUPERAÇÃO -> NOTA FINAL.
     const headRow = document.createElement('tr');
     headRow.innerHTML = `
         <th class="aluno-fixed-head">ALUNO</th>
@@ -478,23 +486,33 @@ function renderAtividadesCriadasList() {
                         <small>Valor: ${Number(a.valor).toFixed(2).replace('.', ',')} pts</small>
                     </div>
                     <div class="atividade-header-actions">
-                        <button type="button" class="btn-grade-edit" onclick="editAtividade('${a.id}')" ${isFechado ? 'disabled' : ''} title="Editar atividade"><i class="fas fa-pen"></i></button>
-                        <button type="button" class="btn-grade-delete" onclick="deleteAtividade('${a.id}')" ${isFechado ? 'disabled' : ''} title="Excluir atividade"><i class="fas fa-trash"></i></button>
+                        <button type="button" class="btn-grade-edit"
+                            onclick="editAtividade('${a.id}')" ${isFechado ? 'disabled' : ''}
+                            title="Editar atividade"><i class="fas fa-pen"></i></button>
+                        <button type="button" class="btn-grade-delete"
+                            onclick="deleteAtividade('${a.id}')" ${isFechado ? 'disabled' : ''}
+                            title="Excluir atividade"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
             </th>
         `).join('')}
-        <th class="summary-head nota-final-bimestre-head">NOTA FINAL<br>DO BIMESTRE</th>
+        <th class="nota-bimestre-head">NOTA FINAL<br>DO BIMESTRE</th>
     `;
     head.appendChild(headRow);
 
     ALUNOS.forEach((aluno, alunoIndex) => {
         const tr = document.createElement('tr');
-        let cells = `<td class="aluno-grade-name"><span class="aluno-number">${alunoIndex + 1}.</span><strong>${escapeHtml(aluno)}</strong></td>`;
+        let cells = `
+            <td class="aluno-grade-name">
+                <span class="aluno-number">${alunoIndex + 1}.</span>
+                <strong>${escapeHtml(aluno)}</strong>
+            </td>`;
 
         atividades.forEach((atv) => {
             if (!atv.notas) atv.notas = {};
-            if (!atv.notas[aluno]) atv.notas[aluno] = { notaOrig: "", notaRec: "", notaFinal: 0.0 };
+            if (!atv.notas[aluno]) {
+                atv.notas[aluno] = { notaOrig: "", notaRec: "", notaFinal: 0.0 };
+            }
 
             const nData = atv.notas[aluno];
             const valor = Number(atv.valor);
@@ -506,32 +524,51 @@ function renderAtividadesCriadasList() {
 
             cells += `
                 <td class="atividade-stacked-cell">
-                    <div class="nota-field-stack"><label>NOTA</label>
-                        <input type="number" step="0.01" min="0" max="${valor}" value="${nData.notaOrig}" ${isFechado ? 'disabled' : ''}
-                            oninput="autoSaveNotaMatrix('${escapeAttr(aluno)}','${atv.id}','notaOrig',this,${valor})">
+                    <div class="nota-field-stack">
+                        <label>NOTA</label>
+                        <input type="number" step="0.01" min="0" max="${valor}"
+                            value="${nData.notaOrig}"
+                            ${isFechado ? 'disabled' : ''}
+                            oninput="autoSaveNotaMatrix('${escapeAttr(aluno)}','${atv.id}','notaOrig',this,${valor})"
+                            aria-label="Nota de ${escapeAttr(aluno)} em ${escapeAttr(atv.nome)}">
                     </div>
-                    <div class="nota-field-stack recuperacao-field"><label>RECUPERAÇÃO</label>
-                        <input type="number" step="0.01" min="0" max="${valor}" value="${nData.notaRec}" id="rec-matrix-${atv.id}-${alunoKey}"
+
+                    <div class="nota-field-stack recuperacao-field">
+                        <label>RECUPERAÇÃO</label>
+                        <input type="number" step="0.01" min="0" max="${valor}"
+                            value="${nData.notaRec}"
+                            id="rec-matrix-${atv.id}-${alunoKey}"
                             ${recBloqueada || isFechado ? 'disabled' : ''}
-                            oninput="autoSaveNotaMatrix('${escapeAttr(aluno)}','${atv.id}','notaRec',this,${valor})">
+                            oninput="autoSaveNotaMatrix('${escapeAttr(aluno)}','${atv.id}','notaRec',this,${valor})"
+                            aria-label="Recuperação de ${escapeAttr(aluno)} em ${escapeAttr(atv.nome)}">
                     </div>
-                    <div class="nota-field-stack nota-final-field"><label>NOTA FINAL</label>
-                        <div id="final-matrix-${atv.id}-${alunoKey}" class="nota-final-value ${classeFinal}">${notaFinal.toFixed(2).replace('.', ',')}</div>
+
+                    <div class="nota-field-stack nota-final-field">
+                        <label>NOTA FINAL</label>
+                        <div id="final-matrix-${atv.id}-${alunoKey}" class="nota-final-value ${classeFinal}">
+                            ${notaFinal.toFixed(2).replace('.', ',')}
+                        </div>
                     </div>
-                </td>`;
+                </td>
+            `;
         });
 
-        // Nota final do bimestre = soma das notas finais das atividades,
-        // aplicando a recuperação bimestral quando houver.
-        const somaAtividades = atividades.reduce((sum, a) => sum + (parseFloat(a.notas?.[aluno]?.notaFinal) || 0), 0);
-        let notaFinalBimestre = somaAtividades;
-        const recBim = bData.recuperacaoBimestral?.[aluno];
-        if (somaAtividades < 15.00 && recBim !== undefined && recBim !== "") {
-            const recNum = parseFloat(recBim) || 0;
-            notaFinalBimestre = recNum >= 15.00 ? 15.00 : Math.max(somaAtividades, recNum);
-        }
-        const classeBimestre = notaFinalBimestre >= 15.00 ? 'nota-alta' : 'nota-baixa';
-        cells += `<td class="summary-cell nota-final-bimestre-cell"><strong class="nota-final-bimestre-value ${classeBimestre}">${notaFinalBimestre.toFixed(2).replace('.', ',')}</strong></td>`;
+        // NOTA FINAL DO BIMESTRE = soma das notas finais de todas as atividades.
+        // Como o bimestre vale 25 pontos, 60% corresponde a 15 pontos.
+        const notaFinalBimestre = atividades.reduce((sum, a) => {
+            return sum + (parseFloat(a.notas?.[aluno]?.notaFinal) || 0);
+        }, 0);
+        const classeBimestre = notaFinalBimestre >= (CONFIG.limitPoints * CONFIG.passingScorePct)
+            ? 'nota-alta'
+            : 'nota-baixa';
+
+        cells += `
+            <td class="nota-final-bimestre-cell">
+                <strong id="nota-bimestre-${safeId(aluno)}" class="${classeBimestre}">
+                    ${notaFinalBimestre.toFixed(2).replace('.', ',')}
+                </strong>
+            </td>
+        `;
 
         tr.innerHTML = cells;
         body.appendChild(tr);
@@ -629,25 +666,17 @@ function autoSaveNotaMatrix(aluno, atvId, campo, input, valorAtv) {
 function atualizarResumoAlunoMatrix(aluno) {
     const bData = db.disciplinas[selectedMateria][selectedBimestre];
     const atividades = bData.atividades || [];
-    const totalObtido = atividades.reduce((sum, a) => sum + (parseFloat(a.notas?.[aluno]?.notaFinal) || 0), 0);
-    const totalPossivel = atividades.reduce((sum, a) => sum + (parseFloat(a.valor) || 0), 0);
-    const percentual = totalPossivel > 0 ? (totalObtido / totalPossivel) * 100 : 0;
-    const aprovado = percentual >= CONFIG.passingScorePct * 100;
+    const notaFinalBimestre = atividades.reduce((sum, a) => {
+        return sum + (parseFloat(a.notas?.[aluno]?.notaFinal) || 0);
+    }, 0);
 
-    document.querySelectorAll('#atividades-grade-body tr').forEach(row => {
-        const name = row.querySelector('.aluno-grade-name strong');
-        if (!name || name.textContent.trim() !== aluno) return;
-        const cells = row.querySelectorAll('.summary-cell');
-        if (cells.length < 4) return;
-        cells[0].querySelector('strong').textContent = totalObtido.toFixed(2).replace('.', ',');
-        cells[1].textContent = totalPossivel.toFixed(2).replace('.', ',');
-        cells[2].querySelector('strong').textContent = Math.round(percentual) + '%';
-        const pill = cells[3].querySelector('.situacao-pill');
-        if (pill) {
-            pill.textContent = aprovado ? 'Aprovado' : 'Recuperação';
-            pill.className = 'situacao-pill ' + (aprovado ? 'situacao-aprovado' : 'situacao-recuperacao');
-        }
-    });
+    const el = document.getElementById(`nota-bimestre-${safeId(aluno)}`);
+    if (el) {
+        el.textContent = notaFinalBimestre.toFixed(2).replace('.', ',');
+        el.className = notaFinalBimestre >= (CONFIG.limitPoints * CONFIG.passingScorePct)
+            ? 'nota-alta'
+            : 'nota-baixa';
+    }
 }
 
 /**
