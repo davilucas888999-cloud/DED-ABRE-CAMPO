@@ -1462,3 +1462,81 @@ input:focus, select:focus, textarea:focus { border-color:#8f1d39 !important; box
 @media (min-width: 701px) {
     .student-registration-card { padding:22px; }
 }
+
+
+/* REFINO DA TABELA DE ALUNOS — LINHAS MAIS FORTES E ZEBRADO SUAVE */
+.table-custom-format,
+.atividades-grade-table,
+#table-notas {
+    border: 2px solid #cfc5c1 !important;
+}
+.table-custom-format th,
+.table-custom-format td,
+.atividades-grade-table th,
+.atividades-grade-table td,
+#table-notas th,
+#table-notas td {
+    border-right: 1.5px solid #c9bfbb !important;
+    border-bottom: 1.5px solid #c9bfbb !important;
+}
+.table-custom-format tbody tr:nth-child(odd),
+#table-notas tbody tr:nth-child(odd),
+.atividades-grade-table tbody tr:nth-child(odd) {
+    background: #ffffff !important;
+}
+.table-custom-format tbody tr:nth-child(even),
+#table-notas tbody tr:nth-child(even),
+.atividades-grade-table tbody tr:nth-child(even) {
+    background: #f1f3f5 !important;
+}
+.table-custom-format tbody tr:hover,
+#table-notas tbody tr:hover,
+.atividades-grade-table tbody tr:hover {
+    background: #e9ecef !important;
+}
+#table-notas td,
+#table-notas th {
+    padding: 10px 9px !important;
+}
+#table-notas td:first-child {
+    min-width: 285px;
+    text-align: left;
+}
+.student-actions-cell {
+    min-width: 115px;
+    text-align: center !important;
+    white-space: nowrap;
+}
+.btn-table-edit {
+    border: 1.5px solid #8c304a;
+    background: #fff;
+    color: #6b142d;
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: .18s ease;
+}
+.btn-table-edit:hover {
+    background: #6b142d;
+    color: #fff;
+    transform: translateY(-1px);
+}
+.input-grid-cadastro {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+.student-enrollment-date {
+    display: block;
+    margin-top: 4px;
+    color: #69727d;
+    font-size: .72rem;
+    line-height: 1.35;
+}
+@media (max-width: 700px) {
+    .input-grid-cadastro { grid-template-columns: 1fr !important; }
+    #table-notas td:first-child { min-width: 250px; }
+    .table-custom-format th,
+    .table-custom-format td,
+    #table-notas th,
+    #table-notas td { border-width: 1px !important; }
+}

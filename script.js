@@ -77,7 +77,7 @@ function inicializarCadastroAlunos() {
         db.alunosCadastro = ALUNOS_INICIAIS.map((nome, index) => {
             const data = obterDataMatriculaInicial(nome);
             const ano = Number(data.split('/')[2]);
-            return { nome, dataMatricula: data, matricula: gerarNumeroMatricula(ano, index + 1) };
+            return { nome, dataMatricula: data, dataNascimento: "", matricula: gerarNumeroMatricula(ano, index + 1) };
         });
     } else {
         // Migração segura: garante cadastro completo dos alunos antigos sem alterar notas.
@@ -87,11 +87,12 @@ function inicializarCadastroAlunos() {
                 const ordem = db.alunosCadastro.length + 1;
                 const data = obterDataMatriculaInicial(nome);
                 const ano = Number(data.split('/')[2]);
-                db.alunosCadastro.push({ nome, dataMatricula: data, matricula: gerarNumeroMatricula(ano, ordem) });
+                db.alunosCadastro.push({ nome, dataMatricula: data, dataNascimento: "", matricula: gerarNumeroMatricula(ano, ordem) });
             }
         });
         db.alunosCadastro.forEach((a, index) => {
             if (!a.dataMatricula) a.dataMatricula = obterDataMatriculaInicial(a.nome);
+            if (a.dataNascimento === undefined) a.dataNascimento = "";
             const ano = Number(String(a.dataMatricula).split('/')[2]) || CONFIG.ano;
             a.matricula = gerarNumeroMatricula(ano, index + 1);
         });
@@ -101,7 +102,7 @@ function inicializarCadastroAlunos() {
 }
 
 function getCadastroAluno(nome) {
-    return (db.alunosCadastro || []).find(a => a.nome === nome) || { nome, dataMatricula: "", matricula: "" };
+    return (db.alunosCadastro || []).find(a => a.nome === nome) || { nome, dataMatricula: "", dataNascimento: "", matricula: "" };
 }
 
 function formatarDataMatricula(data) {
@@ -112,6 +113,17 @@ function formatarDataMatricula(data) {
     return d.toLocaleDateString('pt-BR');
 }
 
+function formatarDataNascimento(data) {
+    return formatarDataMatricula(data);
+}
+
+function dataBRParaISO(data) {
+    if (!data) return '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(data)) return data;
+    const m = String(data).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    return m ? `${m[3]}-${m[2]}-${m[1]}` : '';
+}
+
 function renderCadastroAlunos() {
     const corpo = document.getElementById('table-cadastro-alunos-corpo');
     if (!corpo) return;
@@ -119,9 +131,11 @@ function renderCadastroAlunos() {
         const c = getCadastroAluno(aluno);
         return `<tr>
             <td>${String(index + 1).padStart(2, '0')}</td>
-            <td><strong>${c.matricula}</strong></td>
-            <td>${aluno}</td>
+            <td><strong>${escapeHtml(c.matricula)}</strong></td>
+            <td><strong>${escapeHtml(aluno)}</strong></td>
             <td>${formatarDataMatricula(c.dataMatricula)}</td>
+            <td>${formatarDataNascimento(c.dataNascimento)}</td>
+            <td class="student-actions-cell"><button class="btn-table-edit" onclick="editarAluno('${escapeAttr(aluno)}')"><i class="fas fa-pen"></i> Alterar</button></td>
         </tr>`;
     }).join('');
 }
@@ -135,18 +149,19 @@ function cadastrarNovoAluno(event) {
     event.preventDefault();
     const nomeInput = document.getElementById('novo-aluno-nome');
     const dataInput = document.getElementById('novo-aluno-data');
+    const nascimentoInput = document.getElementById('novo-aluno-nascimento');
     const nome = (nomeInput.value || '').trim().replace(/\s+/g, ' ').toUpperCase();
     if (!nome) return alert('Informe o nome completo do aluno.');
     if (ALUNOS.some(a => a.toUpperCase() === nome)) return alert('Este aluno já está cadastrado.');
 
     const data = dataInput.value ? formatarDataMatricula(dataInput.value) : new Date().toLocaleDateString('pt-BR');
+    const nascimento = nascimentoInput?.value ? formatarDataMatricula(nascimentoInput.value) : '';
     const ordem = (db.alunosCadastro || []).length + 1;
     const ano = Number(data.split('/')[2]) || CONFIG.ano;
-    const cadastro = { nome, dataMatricula: data, matricula: gerarNumeroMatricula(ano, ordem) };
+    const cadastro = { nome, dataMatricula: data, dataNascimento: nascimento, matricula: gerarNumeroMatricula(ano, ordem) };
     db.alunosCadastro.push(cadastro);
     ALUNOS.push(nome);
 
-    // Inicializa a estrutura do novo aluno nas avaliações já existentes, preservando os demais.
     DISCIPLINAS.forEach(m => {
         for (let b = 1; b <= 4; b++) {
             (db.disciplinas[m][b].atividades || []).forEach(atv => {
@@ -162,6 +177,63 @@ function cadastrarNovoAluno(event) {
     if (typeof renderBoletimIndividualList === 'function') renderBoletimIndividualList();
     event.target.reset();
     alert(`Aluno cadastrado com sucesso.\nMatrícula: ${cadastro.matricula}\nOrdem de chamada: ${String(ordem).padStart(2, '0')}`);
+}
+
+function editarAluno(nomeAtual) {
+    const c = getCadastroAluno(nomeAtual);
+    const novoNome = prompt('Nome completo do aluno:', c.nome);
+    if (novoNome === null) return;
+    const nome = novoNome.trim().replace(/\s+/g, ' ').toUpperCase();
+    if (!nome) return alert('Informe o nome completo do aluno.');
+    if (nome !== nomeAtual && ALUNOS.some(a => a.toUpperCase() === nome)) return alert('Já existe outro aluno com esse nome.');
+
+    const dataMatriculaInput = prompt('Data de matrícula (DD/MM/AAAA):', c.dataMatricula || '');
+    if (dataMatriculaInput === null) return;
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dataMatriculaInput.trim())) return alert('Use a data no formato DD/MM/AAAA.');
+
+    const dataNascimentoInput = prompt('Data de nascimento (DD/MM/AAAA):', c.dataNascimento || '');
+    if (dataNascimentoInput === null) return;
+    if (dataNascimentoInput.trim() && !/^\d{2}\/\d{2}\/\d{4}$/.test(dataNascimentoInput.trim())) return alert('Use a data de nascimento no formato DD/MM/AAAA.');
+
+    c.nome = nome;
+    c.dataMatricula = dataMatriculaInput.trim();
+    c.dataNascimento = dataNascimentoInput.trim();
+
+    if (nome !== nomeAtual) {
+        DISCIPLINAS.forEach(m => {
+            for (let b = 1; b <= 4; b++) {
+                const bData = db.disciplinas[m][b];
+                (bData.atividades || []).forEach(atv => {
+                    if (atv.notas && Object.prototype.hasOwnProperty.call(atv.notas, nomeAtual)) {
+                        atv.notas[nome] = atv.notas[nomeAtual];
+                        delete atv.notas[nomeAtual];
+                    }
+                });
+                if (bData.recuperacaoBimestral && Object.prototype.hasOwnProperty.call(bData.recuperacaoBimestral, nomeAtual)) {
+                    bData.recuperacaoBimestral[nome] = bData.recuperacaoBimestral[nomeAtual];
+                    delete bData.recuperacaoBimestral[nomeAtual];
+                }
+            }
+        });
+        const idx = ALUNOS.indexOf(nomeAtual);
+        if (idx >= 0) ALUNOS[idx] = nome;
+    }
+
+    // A matrícula permanece vinculada à ordem da turma; apenas o ano dela acompanha a data de matrícula.
+    const idx = db.alunosCadastro.findIndex(a => a.nome === nome);
+    if (idx >= 0) {
+        const ordem = idx + 1;
+        const ano = Number(c.dataMatricula.split('/')[2]) || CONFIG.ano;
+        c.matricula = gerarNumeroMatricula(ano, ordem);
+    }
+    saveStorage();
+    renderCadastroAlunos();
+    renderMateriaBlocks();
+    if (typeof renderBoletimIndividualList === 'function') renderBoletimIndividualList();
+    if (selectedAtividadeId) {
+        const atv = db.disciplinas[selectedMateria]?.[selectedBimestre]?.atividades?.find(a => a.id === selectedAtividadeId);
+        if (atv) renderNotasTable(atv);
+    }
 }
 
 /**
@@ -829,7 +901,7 @@ function renderNotasTable(atv) {
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><strong>${getCadastroAluno(aluno).matricula} • ${aluno}</strong><small class="student-enrollment-date">Matrícula: ${formatarDataMatricula(getCadastroAluno(aluno).dataMatricula)}</small></td>
+            <td><strong>${getCadastroAluno(aluno).matricula} • ${aluno}</strong><small class="student-enrollment-date">Matrícula: ${formatarDataMatricula(getCadastroAluno(aluno).dataMatricula)}${getCadastroAluno(aluno).dataNascimento ? ` • Nasc.: ${formatarDataNascimento(getCadastroAluno(aluno).dataNascimento)}` : ""}</small></td>
             <td>
                 <input type="number" step="0.01" min="0" max="${atv.valor}" 
                     value="${nData.notaOrig}" 
@@ -1540,7 +1612,7 @@ function renderBoletimIndividualList() {
     ALUNOS.forEach(aluno => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><strong>${getCadastroAluno(aluno).matricula} • ${aluno}</strong><small class="student-enrollment-date">Matrícula: ${formatarDataMatricula(getCadastroAluno(aluno).dataMatricula)}</small></td>
+            <td><strong>${getCadastroAluno(aluno).matricula} • ${aluno}</strong><small class="student-enrollment-date">Matrícula: ${formatarDataMatricula(getCadastroAluno(aluno).dataMatricula)}${getCadastroAluno(aluno).dataNascimento ? ` • Nasc.: ${formatarDataNascimento(getCadastroAluno(aluno).dataNascimento)}` : ""}</small></td>
             <td style="text-align: center;">
                 <button class="btn-action-atv" style="background-color: #0c2c5c; color: #ffffff;" onclick="gerarBoletimPDF('${aluno}')">
                     <i class="fas fa-file-pdf"></i> Gerar Boletim
