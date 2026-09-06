@@ -483,7 +483,7 @@ function renderAtividadesCriadasList() {
                     <div class="atividade-header-text">
                         <span class="atividade-index">ATIVIDADE ${index + 1}</span>
                         <strong class="atividade-name">${escapeHtml(a.nome)}</strong>
-                        <small>Valor: ${Number(a.valor).toFixed(2).replace('.', ',')} pts</small>
+                        <small>Valor: ${Number(a.valor).toFixed(2)} pts</small>
                     </div>
                     <div class="atividade-header-actions">
                         <button type="button" class="btn-grade-edit"
@@ -546,7 +546,7 @@ function renderAtividadesCriadasList() {
                     <div class="nota-field-stack nota-final-field">
                         <label>NOTA FINAL</label>
                         <div id="final-matrix-${atv.id}-${alunoKey}" class="nota-final-value ${classeFinal}">
-                            ${notaFinal.toFixed(2).replace('.', ',')}
+                            ${notaFinal.toFixed(2)}
                         </div>
                     </div>
                 </td>
@@ -565,7 +565,7 @@ function renderAtividadesCriadasList() {
         cells += `
             <td class="nota-final-bimestre-cell">
                 <strong id="nota-bimestre-${safeId(aluno)}" class="${classeBimestre}">
-                    ${notaFinalBimestre.toFixed(2).replace('.', ',')}
+                    ${notaFinalBimestre.toFixed(2)}
                 </strong>
             </td>
         `;
@@ -655,7 +655,7 @@ function autoSaveNotaMatrix(aluno, atvId, campo, input, valorAtv) {
     nData.notaFinal = finalScore;
 
     if (displayFinal) {
-        displayFinal.textContent = finalScore.toFixed(2).replace('.', ',');
+        displayFinal.textContent = finalScore.toFixed(2);
         displayFinal.className = 'nota-final-value ' + (finalScore >= corteMediaAtv ? 'nota-alta' : 'nota-baixa');
     }
 
@@ -672,7 +672,7 @@ function atualizarResumoAlunoMatrix(aluno) {
 
     const el = document.getElementById(`nota-bimestre-${safeId(aluno)}`);
     if (el) {
-        el.textContent = notaFinalBimestre.toFixed(2).replace('.', ',');
+        el.textContent = notaFinalBimestre.toFixed(2);
         el.className = notaFinalBimestre >= (CONFIG.limitPoints * CONFIG.passingScorePct)
             ? 'nota-alta'
             : 'nota-baixa';
@@ -1184,10 +1184,10 @@ function exportBoletimCompletoPDF() {
                 tableBody.push([
                     `${b}º Bimestre`,
                     a.nome,
-                    a.valor.toFixed(2).replace('.', ','),
-                    nD.notaOrig !== "" ? parseFloat(nD.notaOrig).toFixed(2).replace('.', ',') : "0,00",
-                    nD.notaRec !== "" ? parseFloat(nD.notaRec).toFixed(2).replace('.', ',') : "---",
-                    parseFloat(nD.notaFinal).toFixed(2).replace('.', ',')
+                    a.valor.toFixed(2),
+                    nD.notaOrig !== "" ? parseFloat(nD.notaOrig).toFixed(2) : "0.00",
+                    nD.notaRec !== "" ? parseFloat(nD.notaRec).toFixed(2) : "---",
+                    parseFloat(nD.notaFinal).toFixed(2)
                 ]);
             });
 
@@ -1197,7 +1197,7 @@ function exportBoletimCompletoPDF() {
 
             if (totalBimVal < 15.00 && bData.recuperacaoBimestral[aluno] !== undefined) {
                 let recB = parseFloat(bData.recuperacaoBimestral[aluno]) || 0;
-                rbVal = recB.toFixed(2).replace('.', ',');
+                rbVal = recB.toFixed(2);
                 if (recB >= 15.00) finalBimVal = 15.00;
                 else finalBimVal = Math.max(totalBimVal, recB);
             }
@@ -1207,11 +1207,11 @@ function exportBoletimCompletoPDF() {
             // Injeta subtotal estruturado do bimestre na tabela
             tableBody.push([
                 { content: `SOMA FECHAMENTO DO ${b}º BIMESTRE`, colSpan: 2, styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
-                { content: "25,00", styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
-                { content: totalBimVal.toFixed(2).replace('.', ','), styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
+                { content: "25.00", styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
+                { content: totalBimVal.toFixed(2), styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
                 { content: rbVal, styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
                 // Azul da tabela pdf corrigido para [43, 53, 62] que equivale a #2b353e
-                { content: finalBimVal.toFixed(2).replace('.', ','), styles: { fontStyle: 'bold', fillColor: [224, 242, 254], textColor: [43, 53, 62] } }
+                { content: finalBimVal.toFixed(2), styles: { fontStyle: 'bold', fillColor: [224, 242, 254], textColor: [43, 53, 62] } }
             ]);
         }
 
@@ -1225,19 +1225,19 @@ function exportBoletimCompletoPDF() {
 
             tableBody.push([
                 { content: `RECUPERAÇÃO ANUAL`, colSpan: 2, styles: { fontStyle: 'bold', fillColor: [254, 243, 199] } },
-                { content: "100,00", styles: { fontStyle: 'bold', fillColor: [254, 243, 199] } },
-                { content: totalAcumuladoGeral.toFixed(2).replace('.', ','), styles: { fontStyle: 'bold', fillColor: [254, 243, 199] } },
-                { content: rAnualNum.toFixed(2).replace('.', ','), styles: { fontStyle: 'bold', fillColor: [254, 243, 199] } },
-                { content: finalComRecAnualPDF.toFixed(2).replace('.', ','), styles: { fontStyle: 'bold', fillColor: [254, 243, 199], textColor: [217, 119, 6] } }
+                { content: "100.00", styles: { fontStyle: 'bold', fillColor: [254, 243, 199] } },
+                { content: totalAcumuladoGeral.toFixed(2), styles: { fontStyle: 'bold', fillColor: [254, 243, 199] } },
+                { content: rAnualNum.toFixed(2), styles: { fontStyle: 'bold', fillColor: [254, 243, 199] } },
+                { content: finalComRecAnualPDF.toFixed(2), styles: { fontStyle: 'bold', fillColor: [254, 243, 199], textColor: [217, 119, 6] } }
             ]);
         }
 
         // Rodapé final de fechamento anual dentro da matriz de tabelas
         tableBody.push([
             { content: `PONTUAÇÃO ACUMULADA DA DISCIPLINA NO ANO`, colSpan: 2, styles: { fontStyle: 'bold', fillColor: [15, 23, 42], textColor: [255, 255, 255] } },
-            { content: "100,00", styles: { fontStyle: 'bold', fillColor: [15, 23, 42], textColor: [255, 255, 255] } },
+            { content: "100.00", styles: { fontStyle: 'bold', fillColor: [15, 23, 42], textColor: [255, 255, 255] } },
             { content: "", colSpan: 2, styles: { fillColor: [15, 23, 42] } },
-            { content: finalComRecAnualPDF.toFixed(2).replace('.', ','), styles: { fontStyle: 'bold', fillColor: [16, 185, 129], textColor: [255, 255, 255], fontSize: 10 } }
+            { content: finalComRecAnualPDF.toFixed(2), styles: { fontStyle: 'bold', fillColor: [16, 185, 129], textColor: [255, 255, 255], fontSize: 10 } }
         ]);
 
         doc.autoTable({
@@ -1446,7 +1446,6 @@ function obterFichaRendimentoAluno(aluno) {
         ficha[m] = {
             somas: { 1: 0, 2: 0, 3: 0, 4: 0 },
             totalAnual: 0,
-            media: 0,
             situacao: ""
         };
         for (let b = 1; b <= 4; b++) {
@@ -1476,7 +1475,6 @@ function obterFichaRendimentoAluno(aluno) {
         }
 
         ficha[m].totalAnual = totalFinalComRecAnual;
-        ficha[m].media = ficha[m].totalAnual / 4;
         
         // Determina situação oficial baseado na média institucional (Aprovado se >= 60.00 pts)
         if (ficha[m].totalAnual >= 60.00) {
@@ -1555,12 +1553,11 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
         const f = ficha[m];
         tableBody.push([
             m,
-            f.somas[1].toFixed(2).replace('.', ','),
-            f.somas[2].toFixed(2).replace('.', ','),
-            f.somas[3].toFixed(2).replace('.', ','),
-            f.somas[4].toFixed(2).replace('.', ','),
-            f.totalAnual.toFixed(2).replace('.', ','),
-            f.media.toFixed(2).replace('.', ','),
+            f.somas[1].toFixed(1),
+            f.somas[2].toFixed(1),
+            f.somas[3].toFixed(1),
+            f.somas[4].toFixed(1),
+            f.totalAnual.toFixed(1),
             f.situacao
         ]);
     });
@@ -1569,7 +1566,7 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
     doc.autoTable({
         startY: 63,
         margin: { left: 15, right: 15 },
-        head: [['Componente Curricular', '1º Bim', '2º Bim', '3º Bim', '4º Bim', 'Total', 'Média', 'Situação']],
+        head: [['Componente Curricular', '1º Bim', '2º Bim', '3º Bim', '4º Bim', 'Total', 'Situação']],
         body: tableBody,
         theme: 'grid',
         headStyles: { 
@@ -1590,8 +1587,7 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
         columnStyles: { 
             0: { halign: 'left', fontStyle: 'bold', cellWidth: 48 },
             5: { fontStyle: 'bold' },
-            6: { fontStyle: 'bold' },
-            7: { fontStyle: 'bold' }
+            6: { fontStyle: 'bold' }
         },
         didParseCell: function (data) {
             if (data.section === 'body') {
@@ -1610,11 +1606,6 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
                     else data.cell.styles.textColor = [16, 185, 129];
                 }
                 if (data.column.index === 6) {
-                    const val = parseFloat(data.cell.raw.replace(',', '.'));
-                    if (val < 15.00) data.cell.styles.textColor = [220, 38, 38];
-                    else data.cell.styles.textColor = [16, 185, 129];
-                }
-                if (data.column.index === 7) {
                     if (data.cell.raw === "Aprovado") {
                         data.cell.styles.textColor = [16, 185, 129];
                     } else if (data.cell.raw === "Em Curso") {
@@ -1627,21 +1618,35 @@ function adicionarPaginaBoletim(doc, aluno, imgLogo) {
         }
     });
 
-    // Bloco Inferior de Assinaturas
-    const lineY = 252;
-    doc.setDrawColor(148, 163, 184);
-    doc.setLineWidth(0.3);
-    
-    doc.line(20, lineY, 65, lineY);
-    doc.line(82, lineY, 127, lineY);
-    doc.line(144, lineY, 189, lineY);
+    // Área de assinaturas do responsável para cada bimestre.
+    const signatureY = 226;
+    const signatureW = 41;
+    const signatureX = [18, 65, 112, 159];
 
-    doc.setFontSize(8);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(71, 85, 105);
-    doc.text("DIREÇÃO", 42.5, lineY + 4, { align: "center" });
-    doc.text("PROFESSOR(A)", 104.5, lineY + 4, { align: "center" });
-    doc.text("SECRETARIA", 166.5, lineY + 4, { align: "center" });
+    doc.setFontSize(8.5);
+    doc.setTextColor(12, 44, 92);
+    doc.text("ACOMPANHAMENTO DO RESPONSÁVEL", 15, 216);
+
+    signatureX.forEach((x, index) => {
+        doc.setDrawColor(212, 175, 55);
+        doc.setLineWidth(0.35);
+        doc.roundedRect(x, signatureY - 7, signatureW, 28, 2, 2);
+        doc.setDrawColor(148, 163, 184);
+        doc.setLineWidth(0.25);
+        doc.line(x + 4, signatureY + 9, x + signatureW - 4, signatureY + 9);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8);
+        doc.setTextColor(71, 85, 105);
+        doc.text(`${index + 1}º BIMESTRE`, x + signatureW / 2, signatureY, { align: "center" });
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(6.7);
+        doc.text("Assinatura do Responsável", x + signatureW / 2, signatureY + 14, { align: "center" });
+    });
+
+    doc.setFontSize(6.5);
+    doc.setTextColor(100, 116, 139);
+    doc.text("A assinatura registra ciência do acompanhamento escolar em cada período.", 15, 261);
 }
 
 function gerarBoletimPDF(aluno) {
